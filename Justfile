@@ -7,7 +7,7 @@ hex:
 
 flash:
     @just hex
-    teensy_loader_cli -w -mmcu=mk20dx256 oongli.hex -v
+    teensy_loader_cli -s -v -w -mmcu=mk20dx256 oongli.hex
 
 
 bootstrap:
