@@ -12,5 +12,14 @@ flash:
 
 bootstrap:
     rustup component add --target thumbv7em-none-eabi rust-std
+    @just install_teensy_loader_cli
+    sudo apt install -y binutils-arm-none-eabi || echo "installation failed"
     cargo init --bin --name oongli .
 
+install_teensy_loader_cli:
+    #!/usr/bin/env bash
+    sudo apt -y install libusb-dev || echo "installation failed"
+    rm -rf /tmp/teensy_loader_cli
+    cd /tmp/ && git clone https://github.com/PaulStoffregen/teensy_loader_cli
+    cd /tmp/teensy_loader_cli && make && mv ./teensy_loader_cli ~/.local/bin/
+    ~/.local/bin/teensy_loader_cli --list-mcus
