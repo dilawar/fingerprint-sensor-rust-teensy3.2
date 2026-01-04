@@ -1,5 +1,9 @@
 #![no_std]
 #![no_main]
+#![feature(stdarch_arm_hints)]
+#![feature(stdarch_arm_neon_intrinsics)]
+
+mod watchdog;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn main() {
