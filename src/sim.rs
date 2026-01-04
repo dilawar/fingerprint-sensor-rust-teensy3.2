@@ -1,6 +1,5 @@
 //! System Integration Module 
 
-use core;
 
 #[derive(Clone, Copy)]
 pub enum Clock {
@@ -37,9 +36,9 @@ pub struct Sim {
 }
 
 impl Sim {
-    pub unsafe fn new() -> &'static mut Sim {
+    pub unsafe fn new() -> &'static mut Sim { unsafe {
         &mut *(0x40047000 as *mut Sim)
-    }
+    }}
 
     pub fn enable_clock(&mut self, clock: Clock) {
         unsafe {

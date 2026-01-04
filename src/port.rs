@@ -1,4 +1,3 @@
-use core;
 
 #[derive(Clone, Copy)]
 pub enum PortName {
