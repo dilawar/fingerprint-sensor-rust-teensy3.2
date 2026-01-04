@@ -9,6 +9,12 @@ flash:
     @just hex
     teensy_loader_cli -s -v -w -mmcu=mk20dx256 oongli.hex
 
+check:
+    cargo clippy --all-targets --all-features -- -D warnings
+
+fix:
+    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -D warnings
+
 
 bootstrap:
     rustup component add --target thumbv7em-none-eabi rust-std

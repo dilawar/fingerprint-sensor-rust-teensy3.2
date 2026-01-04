@@ -3,10 +3,26 @@
 #![feature(stdarch_arm_hints)]
 #![feature(stdarch_arm_neon_intrinsics)]
 
+mod port;
+mod sim;
 mod watchdog;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn main() {
+    let (wdog, sim, pin) = unsafe {
+        (
+            watchdog::Watchdog::new(),
+            sim::Sim::new(),
+            port::Port::new(port::PortName::C).pin(5),
+        )
+    };
+    wdog.disable();
+    sim.enable_clock(sim::Clock::PortC);
+
+    let mut gpio = pin.make_gpio();
+    gpio.output();
+    gpio.high();
+
     loop {}
 }
 
