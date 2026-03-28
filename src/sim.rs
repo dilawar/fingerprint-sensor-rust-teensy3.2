@@ -3,7 +3,9 @@
 
 #[derive(Clone, Copy)]
 pub enum Clock {
+    PortB,
     PortC,
+    Uart0,
 }
 
 
@@ -43,10 +45,20 @@ impl Sim {
     pub fn enable_clock(&mut self, clock: Clock) {
         unsafe {
             match clock {
+                Clock::PortB => {
+                    let mut scgc = core::ptr::read_volatile(&self.scgc5);
+                    scgc |= 1 << 10;
+                    core::ptr::write_volatile(&mut self.scgc5, scgc);
+                }
                 Clock::PortC => {
                     let mut scgc = core::ptr::read_volatile(&self.scgc5);
-                    scgc |= 0x00000800;
+                    scgc |= 1 << 11;
                     core::ptr::write_volatile(&mut self.scgc5, scgc);
+                }
+                Clock::Uart0 => {
+                    let mut scgc = core::ptr::read_volatile(&self.scgc4);
+                    scgc |= 1 << 10;
+                    core::ptr::write_volatile(&mut self.scgc4, scgc);
                 }
             }
         }

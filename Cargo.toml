@@ -3,6 +3,23 @@ name = "oongli"
 version = "0.1.0"
 edition = "2024"
 
+# The firmware binary requires the "embedded" feature so that `cargo test`
+# (which runs on the host) can skip it — the no_std ARM code won't compile
+# for x86_64.  Use `cargo build --release --features embedded` (or `just elf`)
+# to build the firmware.
+[[bin]]
+name = "oongli"
+path = "src/main.rs"
+required-features = ["embedded"]
+
+[features]
+embedded = []
+
 [dependencies]
 bit_field = "0.7"
 volatile = "0.2"
+
+[dev-dependencies]
+# default-features = false omits the optional libudev port-listing feature;
+# opening a port by name works without it.
+serialport = { version = "4", default-features = false }

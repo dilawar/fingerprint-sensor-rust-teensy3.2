@@ -1,6 +1,7 @@
 
 #[derive(Clone, Copy)]
 pub enum PortName {
+    B,
     C,
 }
 
@@ -16,6 +17,10 @@ pub struct Port {
 pub struct Pin {
     port: *mut Port,
     pin: usize,
+}
+
+pub struct Tx {
+    _pin: Pin,
 }
 
 #[repr(C)]
@@ -37,6 +42,7 @@ impl Port {
     pub fn name(&self) -> PortName {
         let addr = (self as *const Port) as u32;
         match addr {
+            0x4004_A000 => PortName::B,
             0x4004_B000 => PortName::C,
             _ => unreachable!(),
         }
@@ -45,6 +51,7 @@ impl Port {
     pub unsafe fn new(name: PortName) -> &'static mut Port {
         unsafe {
             &mut *match name {
+                PortName::B => 0x4004_A000 as *mut Port,
                 PortName::C => 0x4004_B000 as *mut Port,
             }
         }
@@ -74,12 +81,27 @@ impl Pin {
             Gpio::new(port.name(), self.pin)
         }
     }
+
+    /// Configure pin as UART0 TX. Only valid for Port B pin 17.
+    pub fn make_tx(self) -> Tx {
+        unsafe {
+            let port = &mut *self.port;
+            match (port.name(), self.pin) {
+                (PortName::B, 17) => {
+                    port.set_pin_mode(self.pin, 3);
+                    Tx { _pin: self }
+                }
+                _ => panic!("Invalid UART TX pin"),
+            }
+        }
+    }
 }
 
 impl Gpio {
     pub unsafe fn new(port: PortName, pin: usize) -> Gpio {
         let gpio = match port {
-            PortName::C => 0x43FE1000 as *mut GpioBitband,
+            PortName::B => 0x43FE_0800 as *mut GpioBitband,
+            PortName::C => 0x43FE_1000 as *mut GpioBitband,
         };
 
         Gpio { gpio, pin }

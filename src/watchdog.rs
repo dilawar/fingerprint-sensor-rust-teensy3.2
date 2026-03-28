@@ -22,7 +22,6 @@ impl Watchdog {
     pub unsafe fn new() -> &'static mut Watchdog {
         unsafe { &mut *(0x4005_2000 as *mut Watchdog) }
     }
-
     pub fn disable(&mut self) {
         unsafe {
             // unlock the watchdog registers first before we can disable it.

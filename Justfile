@@ -1,5 +1,5 @@
 elf:
-    cargo build --release
+    cargo build --release --features embedded
 
 hex:
     @just elf
@@ -15,6 +15,13 @@ check:
 fix:
     cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -D warnings
 
+
+# Run integration tests against real hardware.
+# Builds the hex first, then runs tests on the host toolchain.
+# Override the serial port with: just test port=/dev/ttyUSB0
+test port="/dev/ttyACM0":
+    @just hex
+    TEENSY_PORT={{port}} cargo test --target $(rustc -vV | sed -n 's/host: //p')
 
 bootstrap:
     rustup component add --target thumbv7em-none-eabi rust-std
